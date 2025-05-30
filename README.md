@@ -141,7 +141,7 @@ Our cleaned dataframe ended up with 234429 rows and 20 columns. Here are the fir
 
 ### Univariate Analysis
 
-For this analysis we examined the distribution of minutes in the df. That is we examined how long most recipes in the dataset are. The plot shows that most recipes cluster between 1.0 and 2.0 log10 values which corrspons to about 10 to 100 minutes. The peak of the histogram is just below 2, meaning a large number of recipes take between ~30 and 100 minutes. There are very few recipes with log-transformed prep times above 3 , indicating the presence of outliers, but they are rare.
+For this analysis we examined the distribution of minutes in the df. That is we examined how long most recipes in the dataset are. The plot shows that most recipes cluster between 1.0 and 2.0 log10 values which corrspons to about 10 to 100 minutes. The peak of the histogram is just below 2, meaning a large number of recipes take between ~30 and 100 minutes. There are very few recipes with log-transformed prep times above 3 , indicating the presence of outliers, but they are rare
 
 <iframe
   src="assets/minutes.html"
