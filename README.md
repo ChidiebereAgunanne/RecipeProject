@@ -141,10 +141,56 @@ Our cleaned dataframe ended up with 234429 rows and 20 columns. Here are the fir
 
 ### Univariate Analysis
 
-For this analysis we examined the distribution of minutes in the df. That is we examined how long most recipes in the dataset are. The plot shows that most recipes cluster between 1.0 and 2.0 log10 values which corrspons to about 10 to 100 minutes. The peak of the histogram is just below 2, meaning a large number of recipes take between ~30 and 100 minutes. There are very few recipes with log-transformed prep times above 3 , indicating the presence of outliers, but they are rare
+For this analysis we examined the distribution of minutes in the dataframe. That is we examined how long most recipes in the dataset are. The plot shows that most recipes cluster between 1.0 and 2.0 log10 values which corrspons to about 10 to 100 minutes. The peak of the histogram is just below 2, meaning a large number of recipes take between ~30 and 100 minutes. There are very few recipes with log-transformed prep times above 3 , indicating the presence of outliers, but they are rare
 
 <iframe
   src="assets/minutes.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+In this analysis, we examined the distribution of average ratings per recipe in the DataFrame. Since the `'rating_per_recipe`' column contains floating-point values (as it's an average), I rounded the ratings to create clearer groupings for the plot.The graph reveals that most recipes have an average rating of 5, followed by a significant number around 4. In contrast, very few recipes have ratings below 3. This indicates a highly skewed distribution toward the higher end—particularly 5—suggesting that users tend to rate recipes very positively, and that low-rated recipes are underrepresented.
+
+<iframe
+  src="assets/average_rating.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+### Bivariate Analysis
+
+The plot shows the relationship between the `'minutes'` column (scaled down on the y-axis using a logarithmic scale) and `'rating_per_recipe'` on the x-axis. The data points are widely scattered across all rating values, indicating that there is no strong correlation between preparation time and average rating. In other words, there is no clear linear or obvious relationship between the two variables. Most of the data points are clustered around ratings 4 and 5, which aligns with the overall distribution in the dataset, where most recipes are highly rated. Additionally, there is a wide variation in preparation times at every rating level. This suggests that a long prep time doesn't guarantee a high rating, and a short prep time doesn't necessarily lead to a low one.
+
+<iframe
+  src="assets/time_v_rating.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+### Interesting Aggregates
+
+In this section, I explored the relationship between cooking time (in minutes) and the number of non-missing ratings (NaN values excluded) received per recipe. To do this, I created a pivot table using the `'minutes'` column as the index and `'num_ratings'` as the values. After grouping the data, I applied aggregation functions including mean, median, min, max, and count to summarize the distribution of ratings across different preparation times.
+
+|   minutes |   ('mean', 'num_ratings') |   ('median', 'num_ratings') |   ('min', 'num_ratings') |   ('max', 'num_ratings') |   ('count', 'num_ratings') |
+|----------:|--------------------------:|----------------------------:|-------------------------:|-------------------------:|---------------------------:|
+|         0 |                  3        |                         3   |                        3 |                        3 |                          1 |
+|         1 |                  3.0655   |                         2   |                        0 |                       38 |                        229 |
+|         2 |                  2.89978  |                         2   |                        0 |                       20 |                        908 |
+|         3 |                  2.93196  |                         2   |                        0 |                       86 |                        485 |
+|         4 |                  3.17603  |                         2   |                        0 |                       36 |                        267|
+...
+|    129600 |                  0        |                         0   |                        0 |                        0 |                          1 |
+|    259205 |                  1        |                         1   |                        1 |                        1 |                          1 |
+|    288000 |                  1        |                         1   |                        1 |                        1 |                          1 |
+|   1051200 |                  2        |                         2   |                        2 |                        2 |                          1 |
+
+The graph shows that as cooking time increases, the number of ratings given to a recipe decreases sharply. This suggests that longer recipes are rated less frequently, making them more susceptible to outliers and potentially less accurate average ratings. The mean line reveals that the average number of ratings remains relatively consistent across most preparation times, with occasional dips and spikes in longer-duration ranges—likely due to smaller sample sizes. I chose to display only the mean and count aggregation functions to avoid cluttering the graph. The other metrics (like median, min, and max) tend to follow similar patterns and would have added little new information while making the chart harder to interpret.
+
+<iframe
+  src="assets/minutes_v_numRatings.html"
   width="800"
   height="600"
   frameborder="0"
