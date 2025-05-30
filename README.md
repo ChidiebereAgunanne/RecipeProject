@@ -146,7 +146,7 @@ For this analysis we examined the distribution of minutes in the dataframe. That
 <iframe
   src="assets/minutes.html"
   width="800"
-  height="600"
+  height="420"
   frameborder="0"
 ></iframe>
 
@@ -155,7 +155,7 @@ In this analysis, we examined the distribution of average ratings per recipe in 
 <iframe
   src="assets/average_rating.html"
   width="800"
-  height="200"
+  height="420"
   frameborder="0"
 ></iframe>
 
@@ -166,7 +166,7 @@ The plot shows the relationship between the `'minutes'` column (scaled down on t
 <iframe
   src="assets/time_v_rating.html"
   width="800"
-  height="600"
+  height="420"
   frameborder="0"
 ></iframe>
 
@@ -187,6 +187,6 @@ The graph shows that as cooking time increases, the number of ratings given to a
 <iframe
   src="assets/minutes_v_numRatings.html"
   width="800"
-  height="600"
+  height="420"
   frameborder="0"
 ></iframe>
