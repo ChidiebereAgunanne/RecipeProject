@@ -155,7 +155,7 @@ In this analysis, we examined the distribution of average ratings per recipe in 
 <iframe
   src="assets/average_rating.html"
   width="800"
-  height="600"
+  height="200"
   frameborder="0"
 ></iframe>
 
@@ -172,7 +172,7 @@ The plot shows the relationship between the `'minutes'` column (scaled down on t
 
 ### Interesting Aggregates
 
-In this section, I explored the relationship between cooking time (in minutes) and the number of non-missing ratings (NaN values excluded) received per recipe. To do this, I created a pivot table using the `'minutes'` column as the index and `'num_ratings'` as the values. After grouping the data, I applied aggregation functions including mean, median, min, max, and count to summarize the distribution of ratings across different preparation times.
+In this section, I explored the relationship between cooking time (in minutes) and the number of non-missing ratings (NaN values excluded) received per recipe. To do this, I created a pivot table using the `'minutes'` column as the index and `'num_ratings'` as the values. After grouping the data, I applied aggregation functions including mean, median, min, max, and count to summarize the distribution of ratings across different preparation times. The first few rows of the resulting table is shown below. 
 
 |   minutes |   ('mean', 'num_ratings') |   ('median', 'num_ratings') |   ('min', 'num_ratings') |   ('max', 'num_ratings') |   ('count', 'num_ratings') |
 |----------:|--------------------------:|----------------------------:|-------------------------:|-------------------------:|---------------------------:|
