@@ -181,11 +181,6 @@ In this section, I explored the relationship between cooking time (in minutes) a
 |         2 |                  2.89978  |                         2   |                        0 |                       20 |                        908 |
 |         3 |                  2.93196  |                         2   |                        0 |                       86 |                        485 |
 |         4 |                  3.17603  |                         2   |                        0 |                       36 |                        267|
-...
-|    129600 |                  0        |                         0   |                        0 |                        0 |                          1 |
-|    259205 |                  1        |                         1   |                        1 |                        1 |                          1 |
-|    288000 |                  1        |                         1   |                        1 |                        1 |                          1 |
-|   1051200 |                  2        |                         2   |                        2 |                        2 |                          1 |
 
 The graph shows that as cooking time increases, the number of ratings given to a recipe decreases sharply. This suggests that longer recipes are rated less frequently, making them more susceptible to outliers and potentially less accurate average ratings. The mean line reveals that the average number of ratings remains relatively consistent across most preparation times, with occasional dips and spikes in longer-duration ranges—likely due to smaller sample sizes. I chose to display only the mean and count aggregation functions to avoid cluttering the graph. The other metrics (like median, min, and max) tend to follow similar patterns and would have added little new information while making the chart harder to interpret.
 
