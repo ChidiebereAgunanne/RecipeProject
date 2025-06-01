@@ -190,3 +190,106 @@ The graph shows that as cooking time increases, the number of ratings given to a
   height="420"
   frameborder="0"
 ></iframe>
+
+## Assessment of Missingness
+
+Three columns, `'description'`,`'rating'`, and `'review'`, in the merged dataset have a significant amount of missing values, so we decided to assess the missingness on the dataframe.
+
+### NMAR Analysis 
+
+I believe the missing values in the `'review'` column are NMAR because if a recipe takes a long time to prepare or involves many steps, a user might feel too tired or unmotivated to write a review afterward. In contrast, submitting a rating—often just a single click—feels quicker and more convenient. To support this assumption, I would need to examine the `'rating'` column in the interactions DataFrame. Specifically, I would check whether ratings are still present when reviews are missing. If ratings are often submitted without accompanying reviews, it would strengthen the case that review missingness is behaviorally driven and not random.
+
+### Missing Dependency 
+
+Next i will be examining the missingness of `'rating'` in the merged dataframe by testing the dependency of its missingness. I am investigating whether the missingnes in the `'rating'` column depends on the `'minutes'` column, which is the prep time of a recipe, or the column `'num_ratings'`, which is the number of non-NaN ratings a recipe received.
+
+> Minutes and Average Rating
+
+**Null Hypothesis:** The missingness of rating does not depend on the duration of preparation time
+
+**Alternate Hypothesis:** The missingness of rating does depend on the duration of preparation time
+
+**Test Statistic:** : The KS Statistic using the column `'log_minutes'`  and recipes with missing recipe as group 1 and `'log_minutes'` and recipes with available ratings as group 2 
+
+**Significance Level:** 0.05
+
+<iframe
+  src="assets/minutes_rating_missing.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+The above graph shows a boxplot of how the missingness of ratings effect the distribution of minutes. As you can see missing rating values gave a slightly higher median the non-missing rating values.
+
+To analyze the missingness of `'rating_per_recipe'` on `'log_minutes'` I ran a permutation test by shuffling the missingness of rating for 1000 times to collect 1000 simulating mean differences in the two distributions as described in the test statistic.
+
+<iframe
+  src="assets/rating_minutes_missing_dist.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+The **observed difference** of **0.11** is indicated by the red vertical line on the graph. Since the **p_value** that we found **(0.0009)** is < 0.05 which is the significance level that we set, we **reject the null hypothesis**. The missingness of `'rating'` does depend on the `'minutes'`.
+
+> Number Ingredients and Average Rating
+
+**Null Hypothesis:** The missingness of rating does not depend on the number of ingredient
+
+**Alternate Hypothesis:** The missingness of rating does depend on the number of ingredient
+
+**Test Statistic:** The KS Statistic using the column `'n_ingredients'`  and recipes with missing recipe as group 1 and `'n_ingredients'` and recipes with available ratings as group 2 
+
+**Significance Level:** 0.05
+
+<iframe
+  src="assets/numIngredients_missing.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+The above graph shows a box plot of how the missingness of the avergae rating effects the distribution of the number of ingredients. As you can see the median of `'n_ingredients'` are similar with the missing values and without.
+
+To analyze the missingness of `'rating_per_recipe'` on `'n_ingredients'` I ran a permutation test by shuffling the missingness of average rating for 1000 times to collect 1000 KS statistic as described in the test statistic.
+
+<iframe
+  src="assets/numIngredients_missingness_dist.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+The **observed difference** of **.02** is indicated by the red vertical line on the graph. Since the **p_value** that we found **(0.052)** is > 0.05 which is the significance level that we set, we **accept the null hypothesis**. The missingness of `'n_ingredients'` does not depend on the `'minutes'`.
+
+## Hypothesis Testing
+
+As I stated in the introduction the point of this exploration is because we are curious about if people rate recipes higher because they take a short time to prepare or if they are actually good. To investigate this we are using `'log_minutes'`, which contain the values of the `'minutes'` columns scaleed to log10, I used this column because this reduces the impact of outliers making it easier to see a trend. 
+
+To investigate this question I ran  Pearson Correlation Coefficient on the columns `'log_minutes'`and  `'rating_per_recipe'` wiht the following hypotheses, test statistic, and significanr level
+
+**Null Hypothesis:** There is no significant relationship between preparation time and recipe rating.
+
+**Alternative Hypothesis:** There is a significant relationship between preparation time and recipe rating
+
+**Test Statistic:** Spearman’s Rank Correlation 
+
+**Significance Level:** 0.05
+
+I chose to use Spearman’s Rank Correlation because I am testing the relationship between two continuous variables. This coefficient specifically measures the strength and direction of a linear relationship, making it a suitable and effective test statistic for this analysis. Additionally since `'rating_per_recipe'` uses discrete mostly discrets values and the dataframe is not normally distributed, Spearman's Rank Correlation is beneficial here because it handles discrte values well and is non-parametric and robust to outlier.
+
+To run this test i created a new dataframe called dr_corr that includes `'log_minutes'`and `'rating_per_recipe'`, with this dataframe i dropped rows with np.NaN values and and calculated the Spearman’s Rank Correlation and its p-value.
+
+<iframe
+  src="assets/correlation.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+#### Conclusion of Permutation Test
+
+Since the *p-value** that we found **(6.41-24)** is less than the significance level of 0.05, we reject the null hypothesis. There is a statistically significant relationship between preparation time and recipe rating.Even though the relationship is statistically significant, the correlation coefficient is extremely close to 0 **(r = -0.021)**, which means:The relationship is not practically meaningful 
+
+
