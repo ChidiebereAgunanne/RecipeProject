@@ -290,6 +290,6 @@ To run this test i created a new dataframe called dr_corr that includes `'log_mi
 
 #### Conclusion of Permutation Test
 
-Since the *p-value** that we found **(6.41-24)** is less than the significance level of 0.05, we reject the null hypothesis. There is a statistically significant relationship between preparation time and recipe rating.Even though the relationship is statistically significant, the correlation coefficient is extremely close to 0 **(r = -0.021)**, which means:The relationship is not practically meaningful 
+Since the **p-value** that we found **(6.41e-24)** is less than the significance level of 0.05, we reject the null hypothesis. There is a statistically significant relationship between preparation time and recipe rating. Even though the relationship is statistically significant, the correlation coefficient is extremely close to 0 **(r = -0.021)**, which means: The relationship is not practically meaningful 
 
 
