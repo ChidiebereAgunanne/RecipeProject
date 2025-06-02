@@ -222,7 +222,7 @@ Next i will be examining the missingness of `'rating'` in the merged dataframe b
 
 The above graph shows a boxplot of how the missingness of ratings effect the distribution of minutes. As you can see missing rating values gave a slightly higher median the non-missing rating values.
 
-To analyze the missingness of `'rating_per_recipe'` on `'log_minutes'` I ran a permutation test by shuffling the missingness of rating for 1000 times to collect 1000 simulating mean differences in the two distributions as described in the test statistic.
+To analyze the missingness of `'rating_per_recipe'` on `'log_minutes'` I ran a permutation test on a filtered version of the dataframe (excluded outliers) by shuffling the missingness of rating for 1000 times to collect 1000 simulating mean differences in the two distributions as described in the test statistic.
 
 <iframe
   src="assets/rating_minutes_missing_dist.html"
@@ -252,7 +252,7 @@ The **observed difference** of **0.11** is indicated by the red vertical line on
 
 The above graph shows a box plot of how the missingness of the avergae rating effects the distribution of the number of ingredients. As you can see the median of `'n_ingredients'` are similar with the missing values and without.
 
-To analyze the missingness of `'rating_per_recipe'` on `'n_ingredients'` I ran a permutation test by shuffling the missingness of average rating for 1000 times to collect 1000 KS statistic as described in the test statistic.
+To analyze the missingness of `'rating_per_recipe'` on `'n_ingredients'` I ran a permutation test on a filtered version of the dataframe (excluded outliers) by shuffling the missingness of average rating for 1000 times to collect 1000 KS statistic as described in the test statistic.
 
 <iframe
   src="assets/numIngredients_missingness_dist.html"
@@ -288,8 +288,22 @@ To run this test i created a new dataframe called dr_corr that includes `'log_mi
   frameborder="0"
 ></iframe>
 
-#### Conclusion of Permutation Test
+#### Conclusion of Hypothesis Test
 
 Since the **p-value** that we found **(6.41e-24)** is less than the significance level of 0.05, we reject the null hypothesis. There is a statistically significant relationship between preparation time and recipe rating. Even though the relationship is statistically significant, the correlation coefficient is extremely close to 0 **(r = -0.021)**, which means: The relationship is not practically meaningful 
 
+## Framing a Prediction Problem
 
+We plan to **predict the average rating of a recipe**, treating it as a **classification problem**. By rounding the average ratings, we convert them into an **ordinal categorical variable** with discrete values: [1, 2, 3, 4, 5]. To address this, we will build a **multi-class classification** model, since the target variable has five possible classes the model needs to predict.
+
+I chose the average rating of a recipe as the response variable because it provides a strong overall measure of how users perceive the recipe. Additionally, our earlier hypothesis test showed a statistically significant relationship between preparation time and average rating. While the correlation may not be strong enough to imply a meaningful association, it suggests that preparation time could still contribute to predicting a recipe’s rating.
+
+To evaluate our model, we use the F1 score instead of accuracy because the distribution of recipe ratings is left-skewed, with most ratings concentrated in the higher values (4–5). In cases like this, where there is a class imbalance, the F1 score is more reliable than accuracy. It better captures how well the model performs across all classes, especially the less frequent lower ratings, making it a more appropriate metric for evaluating performance on unseen data.
+
+## Baseline Model
+
+For our baseline model, we are utilizing a random forest classifier and split the data points into training and test sets. Yhe featurees we are using fo this model is `'log_minutes'`, a column containing quantitative numerical values, and `'duration_class'` a column ordinal values of 'Short', 'Medium', and Long.
+
+We one hot encoded the boolean values in `'duration_class'` with the corresponding 0 and 1 values and dropped one of the encoded columns. This step allows us to train the model appropriately.
+
+The weighted **F1 score** of this model is **0.26**. The F1 scores for each rating category are 0.03, 0.03, 0.06, 0.21, and 0.30 for ratings of 1, 2, 3, 4, and 5 respectively. The low F1 scores for classes 1–3 indicate that the model struggles to correctly identify lower ratings. While class 4 and especially class 5 are predicted more often, even class 5 — the most frequent rating — only reaches an F1 score of 0.30. Overall, the model is not performing well, particularly due to its poor handling of minority classes. The macro F1 score is just 0.12, showing that the model fails to generalize across all rating levels. This poor performance is likely due to a combination of severe class imbalance and limited feature strength, as `'log_minutes'` and `'duration_class'` alone may not provide enough information to accurately predict nuanced user ratings.
