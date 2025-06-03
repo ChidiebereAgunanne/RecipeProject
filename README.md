@@ -267,7 +267,7 @@ The **observed difference** of **.02** is indicated by the red vertical line on 
 
 As I stated in the introduction the point of this exploration is because we are curious about if people rate recipes higher because they take a short time to prepare or if they are actually good. To investigate this we are using `'log_minutes'`, which contain the values of the `'minutes'` columns scaleed to log10, I used this column because this reduces the impact of outliers making it easier to see a trend. 
 
-To investigate this question I ran  Pearson Correlation Coefficient on the columns `'log_minutes'`and  `'rating_per_recipe'` wiht the following hypotheses, test statistic, and significanr level
+To investigate this question I ran Spearman’s Rank Correlation on the columns `'log_minutes'`and  `'rating_per_recipe'` with the following hypotheses, test statistic, and significanr level
 
 **Null Hypothesis:** There is no significant relationship between preparation time and recipe rating.
 
@@ -279,7 +279,7 @@ To investigate this question I ran  Pearson Correlation Coefficient on the colum
 
 I chose to use Spearman’s Rank Correlation because I am testing the relationship between two continuous variables. This coefficient specifically measures the strength and direction of a linear relationship, making it a suitable and effective test statistic for this analysis. Additionally since `'rating_per_recipe'` uses discrete mostly discrets values and the dataframe is not normally distributed, Spearman's Rank Correlation is beneficial here because it handles discrte values well and is non-parametric and robust to outlier.
 
-To run this test i created a new dataframe called dr_corr that includes `'log_minutes'`and `'rating_per_recipe'`, with this dataframe i dropped rows with np.NaN values and and calculated the Spearman’s Rank Correlation and its p-value.
+To run this test i created a new dataframe called `dr_corr` that includes `'log_minutes'`and `'rating_per_recipe'`, with this dataframe i dropped rows with np.NaN values and and calculated the Spearman’s Rank Correlation and its p-value.
 
 <iframe
   src="assets/correlation.html"
@@ -302,8 +302,54 @@ To evaluate our model, we use the F1 score instead of accuracy because the distr
 
 ## Baseline Model
 
-For our baseline model, we are utilizing a random forest classifier and split the data points into training and test sets. Yhe featurees we are using fo this model is `'log_minutes'`, a column containing quantitative numerical values, and `'duration_class'` a column ordinal values of 'Short', 'Medium', and Long.
+For our baseline model, we are utilizing a random forest classifier and split the data points into training and test sets. Yhe featurees we are using fo this model is `'minutes'`, a column containing quantitative numerical values, and `'duration_class'` a column ordinal values of 'Short', 'Medium', and Long.
 
-We one hot encoded the boolean values in `'duration_class'` with the corresponding 0 and 1 values and dropped one of the encoded columns. This step allows us to train the model appropriately.
+We one hot encoded the boolean values in `'duration_class'` with the corresponding 0 and 1 values and dropped one of the encoded columns. This step allows us to train the model appropriately. For `'minutes'` we used StandardScaler to standardize the `'minutes'` feature to guarantee that the cooking time are in a comparable range since some recipes has extremely long cooking times.
 
-The weighted **F1 score** of this model is **0.26**. The F1 scores for each rating category are 0.03, 0.03, 0.06, 0.21, and 0.30 for ratings of 1, 2, 3, 4, and 5 respectively. The low F1 scores for classes 1–3 indicate that the model struggles to correctly identify lower ratings. While class 4 and especially class 5 are predicted more often, even class 5 — the most frequent rating — only reaches an F1 score of 0.30. Overall, the model is not performing well, particularly due to its poor handling of minority classes. The macro F1 score is just 0.12, showing that the model fails to generalize across all rating levels. This poor performance is likely due to a combination of severe class imbalance and limited feature strength, as `'log_minutes'` and `'duration_class'` alone may not provide enough information to accurately predict nuanced user ratings.
+The weighted **F1 score** of this model is **0.27**. The F1 scores for each rating category are 0.01, 0.02, 0.06, 0.19, and 0.31 for ratings of 1, 2, 3, 4, and 5 respectively. The low F1 scores for classes 1–3 indicate that the model struggles to correctly identify lower ratings. While class 4 and especially class 5 are predicted more often, even class 5 — the most frequent rating — only reaches an F1 score of 0.31. Overall, the model is not performing well, particularly due to its poor handling of minority classes. The macro F1 score is just 0.13, showing that the model fails to generalize across all rating levels. This poor performance is likely due to a combination of severe class imbalance and limited feature strength, as `'log_minutes'` and `'duration_class'` alone may not provide enough information to accurately predict nuanced user ratings.
+
+## Final Model
+For the final modle, we used `'minutes'`, `'duration_class'`,`'contributor_id'`, and `'n_ingredients`' as the features.
+ 
+`'minutes'`
+
+The column is the cooking time of the recipe in minutes. In looking at the the hypothesis test deciding if there is a correlation between `'minutes'` and `'rating_per_recipe'` i was determined that there is a signfiicant statistically significant relationship between preparation time and recipe rating. this made me beleive thta it could help with out prediction model. Ot os reasonable that a recipe that takes longer yo make would leand to lowe rating since people lack patience. I used `'StandardScalar'` to standardize the `'minutes'` feature to guarantee that the cooking time are in comparable ranges due to the fact that `'minutes'` have extreme outliers justt like in the baseline model
+
+
+`'duration_class'`
+
+The column categorizes the data based on the `'minutes'` column by binnning the values into three duration categories:'Short','Medium',and 'Long' based on the quartiles. We chose this feature because based on a bar graph i created between `'duration_class'` and `'rating_per_recipe'`, we saw that a significant amount of shorter recipes were given a rating of 5 compared to medium and longer recipes. This trends might be useful in helping the model predict the acerage rtign of  recipe. I one hot encoded this column like we did for the baseline model
+
+`'contributor_id'`
+
+This column contains information about the user who submitted the recipe. While exploring the data, I found that users whose recipes had received higher rating were more likely to receive higher rating on their other recipes. This could be due to users who consistently create well-tested, flavorful, or easy-to-follow recipes are naturally more likely to receive high ratings across multiple submissions.This trends might be useful in helping the model predict the acerage rtign of  recipe. To create this feature I created a custom transformer for this column which takes each `'contributor_id'` and lists all the average recipe values the user haas gottten on their recipes in a dictinary, it then one-hot-enocdes these values. 
+
+`'n_ingredients'`
+
+The column contains infromation about the number of ingredients that re in a recipe. When creating a scatter plot reflecting the relationship between `'n_ingredients'` and `'rating_per_recipe'` I found that as recipee ingredients increase less higher rating are recorded. Knowing this, we think the relationship betweent these two columns would help our model predict `'rating_per_recipe'` better. To transform the feature `'n_ingredients'` I used the the raw values of this column. 
+
+I used `DecisionTreeClassifier` as our modeling algorithm and conducted `GridSearchCV` to tune the hyperparameters of `max_depth` and `min_samples_split` of the `DecisionTreeClassifier`. Decision trees are prone to high variance, and the two hyperparameters we chose serve a way to control the variance and avoid overfitting the training set. The best combination of the hyperparameters is 42 for the `max_depth` and 2 for the `min_samples_split`.
+
+The metric,weighed **F1 Score**, of the final model is **.44** which is a 0.27 increase from the weighteed F1 score of the baseline mode. Moreover the F1 score of the higher ratings (4 and 5)improved. The F1 scores for each rating categories are now 0.01, 0.01, 0.05,0.27,0.53 for rating of 1s,2s,3s,4s,5s respectively
+
+
+## Fairness Analysis
+
+For our fairness analysis, we divided the recipes into two groups: **short recipes** and **long recipes**, based on the `'duration_class'` column in our cleaned dataset. This classification was determined using quantiles of the `'minutes'` feature, since the presence of high outliers could otherwise skew the grouping. We focused on evaluating **precision parity** between these two groups to determine whether the model predicts ratings with equal accuracy for both. Assessing precision parity helps reveal whether the model systematically favors one group over another—an essential step in identifying potential bias and ensuring fair treatment across different types of recipes.
+
+**Null Hypothesis:**  The model is fair. Any difference in precision between short and long recipes is due to random variation.
+
+**Alternative Hypothesis:** The model is unfair. The model performs worse for short recipes in terms of precision.
+
+**Test Statistic:** Differnce in precison (Long duratiion - Short Duration)
+
+**Significance Level:** 0.05
+
+<iframe
+  src="assets/fairness_dist.html"
+  width="800"
+  height="420"
+  frameborder="0"
+></iframe>
+
+To run the permutation test, we used the `'duration_class'` column to differentiate between recipes with shorter and longer preparation times. We then calculated the observed difference in precision between these two groups, which resulted in a test statistic of 0.14. To simulate what this difference might look like under the null hypothesis, we shuffled the group labels 100 times and recalculated the precision difference each time. After running the permutation test, we obtained a p-value of 0.0. Since this p-value is less than 0.05, we reject the null hypothesis that our model is fair. There is strong evidence to suggest that the model’s precision is significantly lower for short-duration recipes compared to long-duration ones.
